@@ -5,7 +5,7 @@ import jwt
 
 from cat.db.crud import get_users
 from cat.auth.permissions import (
-    AuthPermission, AuthResource, AuthUserInfo, get_base_permissions, get_full_permissions
+    AuthPermission, AuthResource, AuthUserInfo, AuthResponse, get_base_permissions, get_full_permissions
 )
 from cat.auth.auth_utils import is_jwt, check_password
 from cat.env import get_env
@@ -123,8 +123,8 @@ class CoreAuthHandler(BaseAuthHandler):
 
         # do not pass
         return None
-    
-    async def issue_jwt(self, username: str, password: str) -> str | None:
+
+    async def issue_jwt(self, username: str, password: str) -> AuthResponse | None:
         # authenticate local user credentials and return a JWT token
 
         # brutal search over users, which are stored in a simple dictionary.
@@ -145,10 +145,12 @@ class CoreAuthHandler(BaseAuthHandler):
                     "permissions": user["permissions"],  # User permissions
                     "exp": expires                       # Expiry date as a Unix timestamp
                 }
-                return jwt.encode(
+                return AuthResponse(user_id, username,
+                    jwt.encode(
                     jwt_content,
                     get_env("CCAT_JWT_SECRET"),
                     algorithm=get_env("CCAT_JWT_ALGORITHM"),
+                    )
                 )
         return None
 

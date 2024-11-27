@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import Dict, List
-
+from dataclasses import dataclass
 
 from cat.utils import BaseModelDict
 
@@ -68,3 +68,9 @@ class AuthUserInfo(BaseModelDict):
     # - roles
     extra: BaseModelDict = {}
 
+
+@dataclass
+class AuthResponse:
+    id: str
+    username: str
+    token: str

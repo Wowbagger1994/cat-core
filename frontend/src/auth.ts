@@ -1,21 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import axiosClient from "./lib/axiosClient";
-import { JWT } from "next-auth/jwt";
-
-async function refreshToken(token: JWT): Promise<JWT> {
-	const res = await axiosClient.post("/auth/refresh", null, {
-		headers: {
-			Authorization: "refresh " + token.refreshToken,
-		},
-	});
-
-	return {
-		...token,
-		accessToken: res.data.accessToken,
-		refreshToken: res.data.refreshToken,
-	};
-}
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
 	pages: {
@@ -28,7 +13,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 				email: {
 					label: "Email",
 					type: "text",
-					placeholder: "jsmith",
+					placeholder: "email",
 				},
 				password: { label: "Password", type: "password" },
 			},
@@ -39,22 +24,28 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 				const { email, password } = credentials;
 
 				const res = await axiosClient.post(
-					"/auth/login",
+					"/auth/token",
 					{
-						email: email,
+						username: email,
 						password: password,
 					},
 					{
-						withCredentials: true,
 						headers: {
 							"Content-Type": "application/json",
 						},
 					}
 				);
-				const user = res.data;
-				if (res.status === 401) {
+				console.log(res.data);
+				if (res.status !== 200) {
 					return null;
 				}
+				const user: any = {
+					user: {
+						id: res.data.id,
+						name: res.data.username,
+					},
+					accessToken: res.data.access_token,
+				};
 				return user;
 			},
 		}),
@@ -67,16 +58,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 		async jwt({ token, user }) {
 			if (user) return { ...token, ...user };
 
-			if (new Date().getTime() < token.expiresIn) {
-				return token;
-			}
-			return await refreshToken(token);
+			return token;
 		},
 
 		async session({ session, token }) {
 			session.accessToken = token.accessToken;
-			session.refreshToken = token.refreshToken;
-			session.user = token.user;
 			return session;
 		},
 	},

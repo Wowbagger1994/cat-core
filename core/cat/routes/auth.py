@@ -17,8 +17,11 @@ class UserCredentials(BaseModel):
     password: str
 
 class JWTResponse(BaseModel):
+    id: str
+    username: str
     access_token: str
     token_type: str = "bearer"
+
 
 
 # set cookies and redirect to origin page after login
@@ -29,10 +32,11 @@ async def core_login_token(request: Request, response: Response):
 
     # use username and password to authenticate user from local identity provider and get token
     auth_handler = request.app.state.ccat.core_auth_handler
-    access_token = await auth_handler.issue_jwt(
+    data = await auth_handler.issue_jwt(
         form_data["username"], form_data["password"]
     )
 
+    access_token = data.token if data else None
     if access_token:
         response = RedirectResponse(
             url=form_data["referer"], status_code=status.HTTP_303_SEE_OTHER
@@ -95,12 +99,12 @@ async def auth_token(request: Request, credentials: UserCredentials):
 
     # use username and password to authenticate user from local identity provider and get token
     auth_handler = request.app.state.ccat.core_auth_handler
-    access_token = await auth_handler.issue_jwt(
+    data = await auth_handler.issue_jwt(
         credentials.username, credentials.password
     )
 
-    if access_token:
-        return JWTResponse(access_token=access_token)
+    if data:
+        return JWTResponse(access_token=data.token, id=data.id, username=data.username)
 
     # Invalid username or password
     # wait a little to avoid brute force attacks

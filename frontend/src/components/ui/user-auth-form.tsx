@@ -33,16 +33,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
 	async function registerAction(formData: FormData) {
 		let name = formData.get("name") as string;
-		let email = formData.get("email") as string;
 		let password = formData.get("password") as string;
-		let passwordConfirm = formData.get("passwordConfirm") as string;
 		console.log(process.env.BACKEND_URL);
 		await axios
-			.post("http://localhost:8080/users ", {
-				name: name,
-				email: email,
+			.post("http://localhost:1865/users ", {
+				username: name,
 				password: password,
-				passwordConfirm: passwordConfirm,
+				permissions: {
+					CONVERSATION: ["WRITE", "EDIT", "LIST", "READ", "DELETE"],
+				},
 			})
 			.then(() => {
 				setIsLoading(true);
@@ -65,7 +64,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 							<Input
 								id="email"
 								placeholder="name@example.com"
-								type="email"
+								type="text"
 								name="email"
 								autoCapitalize="none"
 								autoComplete="email"
@@ -98,9 +97,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 				<form action={registerAction}>
 					<div className="grid gap-2">
 						<div className="grid gap-1">
-							<Label className="sr-only" htmlFor="email">
-								Email
-							</Label>
 							<Input
 								id="name"
 								name="name"
@@ -110,39 +106,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 								required
 								disabled={isLoading}
 							/>
-							<Label className="sr-only" htmlFor="email">
-								Email
-							</Label>
-							<Input
-								id="email"
-								placeholder="name@example.com"
-								type="email"
-								name="email"
-								autoCapitalize="none"
-								autoComplete="email"
-								autoCorrect="off"
-								required
-								disabled={isLoading}
-							/>
-							<Label className="sr-only" htmlFor="email">
-								Email
-							</Label>
 							<Input
 								id="password"
 								name="password"
 								type="password"
 								placeholder="Password"
-								required
-								disabled={isLoading}
-							/>
-							<Label className="sr-only" htmlFor="email">
-								Email
-							</Label>
-							<Input
-								id="passwordConfirm"
-								name="passwordConfirm"
-								type="password"
-								placeholder="Confirm Password"
 								required
 								disabled={isLoading}
 							/>
