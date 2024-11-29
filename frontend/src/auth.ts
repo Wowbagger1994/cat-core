@@ -35,7 +35,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 						},
 					}
 				);
-				console.log(res.data);
 				if (res.status !== 200) {
 					return null;
 				}
@@ -51,10 +50,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 		}),
 	],
 	callbacks: {
-		authorized: async ({ auth }) => {
-			// Logged in users are authenticated, otherwise redirect to login page
-			return !!auth;
-		},
+		// 	authorized: async ({ auth }) => {
+		// 		// Logged in users are authenticated, otherwise redirect to login page
+		// 		return !!auth;
+		// 	},
 		async jwt({ token, user }) {
 			if (user) return { ...token, ...user };
 
@@ -63,6 +62,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
 		async session({ session, token }) {
 			session.accessToken = token.accessToken;
+			session.user = token.user;
 			return session;
 		},
 	},
