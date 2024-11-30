@@ -21,18 +21,19 @@ def agent_prompt_prefix(prefix, cat):
     Focus on practical advice, include links to official resources when applicable, and clearly highlight key steps the user needs to take to comply with laws in the specified destination.
     """
 
+    formatted_prompt = ""
     if "user_info" in cat.working_memory:
         info = cat.working_memory["user_info"]
         formatted_prompt = prompt.format(
-            user_name=info["name"],
-            user_age=info["age"],
-            language=info["language"],
-            destination=info["destination"],
-            duration=info["duration"],
-            arrival_date=info["arrival_date"],
-            nationality=info["nationality"],
-            current_location=info["current_location"],
-            occupation=info["occupation"]
+            user_name=info["name"] if "name" in info else "",
+            user_age=info["age"] if "age" in info else "",
+            language=info["language"] if "language" in info else "",
+            destination=info["destination"] if "destination" in info else "",
+            duration=info["duration"] if "duration" in info else "",
+            arrival_date=info["arrival_date"] if "arrival_date" in info else "",
+            nationality=info["nationality"] if "nationality" in info else "",
+            current_location=info["current_location"] if "current_location" in info else "",
+            occupation=info["occupation"] if "occupation" in info else ""
         )
 
     return formatted_prompt
