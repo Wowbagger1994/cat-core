@@ -1,17 +1,27 @@
 "use client";
 
 import React, { useState } from 'react';
-import { IoLogoSnapchat } from "react-icons/io";
-import { IoMdSettings } from "react-icons/io";
-import { FaRegUser } from "react-icons/fa";
-import Sidebar from './Sidebar'; // Importa il componente Sidebar
-import Burocracy from './burocracy/Burocracy'; // Importa il contenuto Burocracy
-import LangLearn from './langlearn/LangLearn'; // Importa il contenuto LangLearn
-import CreateTripForm from './CreateTripForm'; // Importa il modulo CreateTripForm
-import FirstLoginForm from './FirstLoginForm'; // Importa il modulo FirstLoginForm
-import EditTripForm from './EditTripForm'; // Importa il modulo EditTripForm
-
-import { Box, ThemeProvider, CssBaseline, AppBar, Toolbar, IconButton, Typography, createTheme, Container } from '@mui/material';
+import {
+  Box,
+  ThemeProvider,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  createTheme,
+  Container,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu'; // Importa l'icona del menu
+import SettingsIcon from '@mui/icons-material/Settings';
+import PersonIcon from '@mui/icons-material/Person';
+import Sidebar from './Sidebar';
+import Burocracy from './burocracy/Burocracy';
+import LangLearn from './langlearn/LangLearn';
+import CreateTripForm from './CreateTripForm';
+import FirstLoginForm from './FirstLoginForm';
+import EditTripForm from './EditTripForm';
+import { UserNav } from "@/components/ui/user-nav";
 
 // Tema scuro Material UI 3
 const darkTheme = createTheme({
@@ -63,7 +73,7 @@ const HomePage: React.FC = () => {
       case 'langLearn':
         return <LangLearn />;
       case 'editTrip':
-        return <EditTripForm onSubmit={() => setSelectedSection('')}/>; // Resetta la sezione una volta salvato
+        return <EditTripForm onSubmit={() => setSelectedSection('')} />; // Resetta la sezione una volta salvato
       default:
         return (
           <Box display="flex" alignItems="center" justifyContent="center" height="100%">
@@ -79,24 +89,27 @@ const HomePage: React.FC = () => {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
+        
         {/* Navbar */}
-        <AppBar position="static" sx={{ bgcolor: 'background.paper' }}>
+        <AppBar position="static" sx={{ bgcolor: 'background.paper', mb: 2 }}>
           <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="logo">
-              <IoLogoSnapchat size={30} />
-            </IconButton>
-            <Box flexGrow={1} />
-            <IconButton color="inherit">
-              <IoMdSettings size={24} />
-            </IconButton>
-            <IconButton color="inherit">
-              <FaRegUser size={24} />
-            </IconButton>
+            
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Welcome to Nomad Nexus
+            </Typography>
+            
+            {/* User Navigation Icons */}
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <IconButton color="inherit">
+                <SettingsIcon />
+              </IconButton>
+              <UserNav />
+            </Box>
           </Toolbar>
         </AppBar>
-        
+
         {/* Body */}
-        <Container maxWidth="xl" sx={{ display: 'flex', flexGrow: 1, py: 4 }}>
+        <Container maxWidth="xl" sx={{ display: 'flex', flexGrow: 1, py: 2 }}>
           {/* Sidebar (mostra solo se non è il primo login e se il viaggio è stato creato) */}
           {!isFirstLogin && hasCreatedTrip && (
             <Box sx={{ width: '20%', minWidth: '200px', mr: 4 }}>

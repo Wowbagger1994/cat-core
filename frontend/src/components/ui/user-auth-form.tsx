@@ -21,7 +21,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 		signIn("credentials", {
 			email: formData.get("email"),
 			password: formData.get("password"),
-			redirectTo: "/dashboard",
+			redirectTo: "/home",
 		})
 			.then(() => {
 				setIsLoading(true);
