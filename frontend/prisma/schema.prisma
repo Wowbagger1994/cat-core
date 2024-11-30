@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+}
+
+model User {
+  id                 String    @id @default(cuid()) // Unique identifier for the user
+  name               String    // User's name
+  email	             String    // User's email
+  profession         String    // User's profession
+  nomadExperience    String
+  birthDate          DateTime  // Date of birth
+  nationality        String    // User's nationality
+  language           String    // List of languages the user speaks
+  residenceCountry   String    // Country of residence
+  transportation     String    // Preferred transportation mode
+  duration           String    // Duration for some relevant activity (e.g., stay, plan, etc.)
+  purpose            String    // Purpose for the activity
+  currentLevel       String    // Current skill/knowledge level
+  targetLevel        String    // Target skill/knowledge level
+  timeToAchieve      String    // Time to achieve the target level
+  weeklyTime         Int       // Weekly time commitment in hours
+  weeklyFrequency    String  // Frequency of interactions (e.g., daily, weekly, etc.)
+  languageFocus      String    // Focus in language learning or use
+  workMode           String    // Preferred work mode (e.g., remote, hybrid, etc.)
+  documents          UserDocuments[]
+}
+
+model Documents {
+  id String @id @default(cuid())
+  name String
+  users UserDocuments[]
+}
+
+model UserDocuments {
+  id String @id @default(cuid())
+  userId String
+  documentId String
+  document Documents @relation(fields: [documentId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
