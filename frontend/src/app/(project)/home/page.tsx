@@ -11,8 +11,10 @@ import {
   Typography,
   createTheme,
   Container,
+  Menu,
+  MenuItem,
+  Avatar,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu'; // Importa l'icona del menu
 import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
 import Sidebar from './Sidebar';
@@ -21,7 +23,6 @@ import LangLearn from './langlearn/LangLearn';
 import CreateTripForm from './CreateTripForm';
 import FirstLoginForm from './FirstLoginForm';
 import EditTripForm from './EditTripForm';
-import { UserNav } from "@/components/ui/user-nav";
 
 // Tema scuro Material UI 3
 const darkTheme = createTheme({
@@ -55,15 +56,33 @@ const HomePage: React.FC = () => {
   const [isFirstLogin, setIsFirstLogin] = useState<boolean>(true); // Stato per verificare se è il primo login
   const [hasCreatedTrip, setHasCreatedTrip] = useState<boolean>(false); // Stato per verificare se un viaggio è stato creato
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // Stato per gestire il menu a tendina
+  const open = Boolean(anchorEl);
+
+  // Funzione per gestire l'apertura del menu utente
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  // Funzione per gestire la chiusura del menu utente
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Funzione per gestire il logout
+  const handleLogout = () => {
+    window.location.href = '/api/auth/signout';
+    console.log("Logout");
+    handleMenuClose();
+  };
+
   // Funzione per rendere dinamico il contenuto principale
   const renderContent = () => {
     if (isFirstLogin) {
-      // Se è il primo login, mostra il form di completamento profilo
       return <FirstLoginForm onSubmit={() => setIsFirstLogin(false)} />;
     }
 
     if (!hasCreatedTrip) {
-      // Se il viaggio non è stato creato, mostra il modulo per creare un viaggio
       return <CreateTripForm onSubmit={() => setHasCreatedTrip(true)} />;
     }
 
@@ -73,7 +92,7 @@ const HomePage: React.FC = () => {
       case 'langLearn':
         return <LangLearn />;
       case 'editTrip':
-        return <EditTripForm onSubmit={() => setSelectedSection('')} />; // Resetta la sezione una volta salvato
+        return <EditTripForm onSubmit={() => setSelectedSection('')} />;
       default:
         return (
           <Box display="flex" alignItems="center" justifyContent="center" height="100%">
@@ -93,17 +112,44 @@ const HomePage: React.FC = () => {
         {/* Navbar */}
         <AppBar position="static" sx={{ bgcolor: 'background.paper', mb: 2 }}>
           <Toolbar>
-            
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Welcome to Nomad Nexus
             </Typography>
-            
+
             {/* User Navigation Icons */}
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <IconButton color="inherit">
                 <SettingsIcon />
               </IconButton>
-              <UserNav />
+
+              {/* Aggiungere un'icona utente che ti permette di aprire un menu a tendina per il logout */}
+              <IconButton color="inherit" onClick={handleMenuOpen}>
+                <Avatar>
+                  <PersonIcon />
+                </Avatar>
+              </IconButton>
+
+              {/* Menu a tendina per il logout */}
+              <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                PaperProps={{
+                  sx: {
+                    mt: 1, // Sposta il menu verso il basso di 1 spacing unit
+                  },
+                }}
+              >
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
             </Box>
           </Toolbar>
         </AppBar>
