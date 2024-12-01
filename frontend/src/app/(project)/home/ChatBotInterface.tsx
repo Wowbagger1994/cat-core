@@ -1,13 +1,37 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Button, Container, Paper, TextField, Typography, ThemeProvider, CssBaseline, createTheme } from '@mui/material';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 interface ChatMessage {
   sender: 'user' | 'bot';
   message: string;
 }
 
+interface User {
+  name: string;
+  email?: string;
+  profession?: string;
+  nomadExperience?: string;
+  birthDate?: Date;
+  nationality?: string;
+  language?: string;
+  residenceCountry?: string;
+  tripCount?: number;
+  transportation?: string;
+  duration?: string;
+  purpose?: string;
+  currentLevel?: string;
+  targetLevel?: string;
+  timeToAchieve?: string;
+  weeklyTime?: number;
+  weeklyFrequency?: string;
+  languageFocus?: string;
+  workMode?: string;
+  documents?: any[];
+}
+
 interface ChatBotInterfaceProps {
-  onMessageSend: (message: string) => Promise<string>;
   service: string;
   title: string;
 }
@@ -41,31 +65,40 @@ const darkTheme = createTheme({
   },
 });
 
-const ChatBotInterface: React.FC<ChatBotInterfaceProps> = ({ onMessageSend, title, service }) => {
+const ChatBotInterface: React.FC<ChatBotInterfaceProps> = ({ title, service }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
   const [isSending, setIsSending] = useState<boolean>(false); // Stato per gestire l'invio del messaggio
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref per l'elemento di fine messaggi
+  const { data: session } = useSession();
 
-  // async function sendMessage(msg: string) {
-	// 	const options = {
-	// 		method: "POST",
-	// 		url: process.env.BACKEND_URL + "/message",
-	// 		headers: { "Content-Type": "application/json", user_id: user },
-	// 		data: {
-	// 			text: msg,
-	// 			user_info: { name: "Enrik" },
-  // 			service: service,
-	// 		},
-	// 	};
+  // Verifica se la sessione è presente
+  let user: User = {
+    name: session?.user?.name ?? '',  // Imposta il nome dell'utente dalla sessione
+    language: "English",
+  };
 
-	// 	try {
-	// 		const data = await axios.request(options);
-	// 		console.log("data: ", data.data);
-	// 	} catch (error) {
-	// 		console.error(error);
-	// 	}
-	// }
+  async function sendMessage(msg: string) {
+    const options = {
+      method: "POST",
+      url: process.env.NEXT_PUBLIC_BACKEND_URL + "/message",
+      headers: { "Content-Type": "application/json", user_id: user.name },
+      data: {
+        text: msg,
+        user_info: { name: user.name },
+        service: service,
+      },
+    };
+
+    try {
+      const response = await axios(options);
+      console.log("Risposta dal chatbot:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Errore nell'invio del messaggio al chatbot:", error);
+      throw error;
+    }
+  }
 
   // Funzione per scorrere automaticamente all'ultimo messaggio
   const scrollToBottom = () => {
@@ -90,8 +123,9 @@ const ChatBotInterface: React.FC<ChatBotInterfaceProps> = ({ onMessageSend, titl
 
     try {
       // Chiamata all'endpoint del chatbot per ottenere la risposta
-      const botResponse = await onMessageSend(input);
-      const botMessage: ChatMessage = { sender: 'bot', message: botResponse };
+      const botResponse = await sendMessage(input);
+      const content = botResponse.content;
+      const botMessage: ChatMessage = { sender: 'bot', message: content };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error('Errore nel recupero della risposta del bot:', error);

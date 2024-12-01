@@ -62,6 +62,7 @@ const FirstLoginForm: React.FC<FirstLoginFormProps> = ({ onSubmit }) => {
       }
     };
 
+    
     fetchEnums();
   }, []);
 

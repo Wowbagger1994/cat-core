@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import axios from 'axios';
 
 interface LangLearnFormProps {
   onSubmit: () => void;
@@ -13,18 +14,33 @@ const LangLearnForm: React.FC<LangLearnFormProps> = ({ onSubmit }) => {
   const [interactionFrequency, setInteractionFrequency] = useState<string>('');
   const [languageFocus, setLanguageFocus] = useState<string>('');
   const [otherLanguageFocus, setOtherLanguageFocus] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
+    setLoading(true);
+
+    const langLearnData = {
       currentLevel,
       targetLevel,
       timeToAchieve,
       weeklyTime,
       interactionFrequency,
       languageFocus: languageFocus === 'Altro' ? otherLanguageFocus : languageFocus,
-    });
-    onSubmit();
+    };
+    console.log('Language learning data:', langLearnData);
+
+    // try {
+    //   // Effettua una chiamata POST per salvare i dati nel database
+    //   await axios.post('/api/user/langlearn', langLearnData);
+    //   alert('Language learning information saved successfully!');
+    // } catch (error) {
+    //   console.error('Errore nel salvataggio delle informazioni linguistiche:', error);
+    //   alert('Si è verificato un errore durante il salvataggio delle informazioni.');
+    // } finally {
+    // }
+    setLoading(false);
+    onSubmit(); // Notifica il componente genitore che il form è stato inviato con successo
   };
 
   return (
@@ -52,7 +68,7 @@ const LangLearnForm: React.FC<LangLearnFormProps> = ({ onSubmit }) => {
 
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, width: '100%' }}>
         {/* Left Column */}
-        <Box sx={{ flex: 1, maxHeight: '300px', overflowY: 'auto', p: 1 }}> {/* Scroll per la colonna di sinistra */}
+        <Box sx={{ flex: 1, maxHeight: '300px', overflowY: 'auto', p: 1 }}>
           {/* Current Level */}
           <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
             <InputLabel id="current-level-label">Livello Linguistico Attuale</InputLabel>
@@ -114,7 +130,7 @@ const LangLearnForm: React.FC<LangLearnFormProps> = ({ onSubmit }) => {
         </Box>
 
         {/* Right Column */}
-        <Box sx={{ flex: 1, maxHeight: '400px', overflowY: 'auto', p: 1 }}> {/* Scroll per la colonna di destra */}
+        <Box sx={{ flex: 1, maxHeight: '400px', overflowY: 'auto', p: 1 }}>
           {/* Target Level */}
           <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
             <InputLabel id="target-level-label">Livello Linguistico da Raggiungere</InputLabel>
@@ -189,8 +205,8 @@ const LangLearnForm: React.FC<LangLearnFormProps> = ({ onSubmit }) => {
       </Box>
 
       {/* Submit Button */}
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 4, width: '200px' }}>
-        Submit
+      <Button type="submit" variant="contained" color="primary" sx={{ mt: 4, width: '200px' }} disabled={loading}>
+        {loading ? <CircularProgress size={24} /> : 'Submit'}
       </Button>
     </Box>
   );

@@ -25,6 +25,30 @@ import CreateTripForm from './CreateTripForm';
 import FirstLoginForm from './FirstLoginForm';
 import EditTripForm from './EditTripForm';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
+
+interface User {
+  name: string;
+  email?: string;
+  profession?: string;
+  nomadExperience?: string;
+  birthDate?: Date;
+  nationality?: string;
+  language?: string;
+  residenceCountry?: string;
+  tripCount?: number;
+  transportation?: string;
+  duration?: string;
+  purpose?: string;
+  currentLevel?: string;
+  targetLevel?: string;
+  timeToAchieve?: string;
+  weeklyTime?: number;
+  weeklyFrequency?: string;
+  languageFocus?: string;
+  workMode?: string;
+  documents?: any[];
+}
 
 // Tema scuro Material UI 3
 const darkTheme = createTheme({
@@ -60,28 +84,37 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true); // Stato per la gestione del caricamento
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // Stato per gestire il menu a tendina
   const open = Boolean(anchorEl);
-
+  const { data: session } = useSession();
+  
+  // Verifica se la sessione è presente
+  let user: User = {
+    name: session?.user?.name ?? '',  // Imposta il nome dell'utente dalla sessione
+  };
+  
   useEffect(() => {
-    // Recupero delle informazioni dell'utente dal backend per verificare se è il primo login
-    const checkUserProfile = async () => {
-      try {
-        const response = await axios.get('/api/user/profile');
-        const userProfile = response.data;
+    // Funzione per recuperare i dati utente
+    const fetchData = async () => {
+      if (user.name) {
+        try {
+          setLoading(true);
+          const response = await axios.get('/api/user/' + user.name);
+          const userData = response.data as User;
 
-        // Verifica se ci sono campi vuoti
-        const isProfileComplete = userProfile.profession && userProfile.nomadExperience && userProfile.birthDate && userProfile.nationality && userProfile.language && userProfile.residenceCountry;
-
-        setIsFirstLogin(!isProfileComplete);
-      } catch (error) {
-        console.error('Errore durante il recupero del profilo utente:', error);
-        setIsFirstLogin(true); // In caso di errore, impostiamo come se fosse il primo login per sicurezza
-      } finally {
-        setLoading(false);
+          if (userData && userData.profession && userData.nomadExperience && userData.birthDate) {
+            setIsFirstLogin(false);
+          } else {
+            setIsFirstLogin(true);
+          }
+        } catch (error) {
+          console.error('Errore nel recupero dei dati utente:', error);
+        } finally {
+          setLoading(false);
+        }
       }
     };
 
-    checkUserProfile();
-  }, []);
+    fetchData();
+  }, [user.name]);
 
   // Funzione per gestire l'apertura del menu utente
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -111,13 +144,22 @@ const HomePage: React.FC = () => {
     }
 
     if (isFirstLogin) {
-      return <FirstLoginForm onSubmit={() => setIsFirstLogin(false)} />;
+      // Visualizza il form per il primo login
+      return (
+        <FirstLoginForm
+          onSubmit={() => {
+            setIsFirstLogin(false);
+          }}
+        />
+      );
     }
 
     if (!hasCreatedTrip) {
+      // Mostra il modulo per creare un viaggio
       return <CreateTripForm onSubmit={() => setHasCreatedTrip(true)} />;
     }
 
+    // Contenuti generici della pagina principale
     switch (selectedSection) {
       case 'burocracy':
         return <Burocracy />;

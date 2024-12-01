@@ -1,5 +1,19 @@
 import React, { useState } from 'react';
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormGroup, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  CircularProgress,
+} from '@mui/material';
+import axios from 'axios';
 
 interface BurocracyFormProps {
   onSubmit: () => void;
@@ -11,17 +25,32 @@ const BurocracyForm: React.FC<BurocracyFormProps> = ({ onSubmit }) => {
   const [healthInsurance, setHealthInsurance] = useState<string>('');
   const [otherDocument, setOtherDocument] = useState<string>('');
   const [otherWorkMode, setOtherWorkMode] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
+    setLoading(true);
+
+    const buroData = {
       documents: documents.includes('Altro') ? [...documents, otherDocument] : documents,
       workMode: workMode === 'Altro' ? otherWorkMode : workMode,
       healthInsurance,
-    });
-    onSubmit();
-  };
+    };
+    console.log('Burocracy data:', buroData);
 
+    // try {
+    //   // Effettua una chiamata POST per salvare i dati nel database
+    //   await axios.post('/api/user/burocracy', buroData);
+    //   alert('Information saved successfully!');
+    // } catch (error) {
+    //   console.error('Errore nel salvataggio delle informazioni burocratiche:', error);
+    //   alert('Si è verificato un errore durante il salvataggio delle informazioni.');
+    // } finally {
+    // }
+    setLoading(false);
+    onSubmit(); // Notifica il componente genitore che il form è stato inviato con successo
+  };
+  
   const handleDocumentChange = (selectedDocument: string) => {
     if (documents.includes(selectedDocument)) {
       setDocuments(documents.filter((doc) => doc !== selectedDocument));
@@ -55,21 +84,21 @@ const BurocracyForm: React.FC<BurocracyFormProps> = ({ onSubmit }) => {
 
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, width: '100%' }}>
         {/* Left Column */}
-        <Box sx={{ flex: 1, maxHeight: '300px', overflowY: 'auto', p: 1 }}> {/* Scroll per la colonna di sinistra */}
+        <Box sx={{ flex: 1, maxHeight: '300px', overflowY: 'auto', p: 1 }}>
           <Typography variant="h6" color="textPrimary" textAlign="center">
             Di quali documenti e visti sei già in possesso?
           </Typography>
-          <FormGroup sx={{ mt: 0, width: '100%', color: "white" }}>
+          <FormGroup sx={{ mt: 0, width: '100%', color: 'white' }}>
             {[
-              "Passaporto valido",
-              "Visto turistico per l’Italia",
-              "Visto per lavoro autonomo",
-              "Visto per lavoro subordinato",
-              "Visto per nomadi digitali",
-              "Permesso di soggiorno per studio",
-              "Permesso di soggiorno temporaneo",
-              "Altro",
-              "Nessuno",
+              'Passaporto valido',
+              'Visto turistico per l’Italia',
+              'Visto per lavoro autonomo',
+              'Visto per lavoro subordinato',
+              'Visto per nomadi digitali',
+              'Permesso di soggiorno per studio',
+              'Permesso di soggiorno temporaneo',
+              'Altro',
+              'Nessuno',
             ].map((option) => (
               <FormControlLabel
                 key={option}
@@ -98,7 +127,7 @@ const BurocracyForm: React.FC<BurocracyFormProps> = ({ onSubmit }) => {
         </Box>
 
         {/* Right Column */}
-        <Box sx={{ flex: 1, maxHeight: '400px', overflowY: 'auto', p: 1 }}> {/* Scroll per la colonna di destra */}
+        <Box sx={{ flex: 1, maxHeight: '400px', overflowY: 'auto', p: 1 }}>
           {/* Modalità di Lavoro */}
           <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
             <InputLabel id="work-mode-label">Modalità di Lavoro</InputLabel>
@@ -109,12 +138,22 @@ const BurocracyForm: React.FC<BurocracyFormProps> = ({ onSubmit }) => {
               label="Modalità di Lavoro"
               required
             >
-              <MenuItem value="" disabled>Seleziona la tua modalità di lavoro...</MenuItem>
-              <MenuItem value="Dipendente da remoto per un’azienda estera">Dipendente da remoto per un’azienda estera</MenuItem>
-              <MenuItem value="Freelancer con clienti internazionali">Freelancer con clienti internazionali</MenuItem>
-              <MenuItem value="Proprietario di una mia attività registrata all’estero">Proprietario di una mia attività registrata all’estero</MenuItem>
+              <MenuItem value="" disabled>
+                Seleziona la tua modalità di lavoro...
+              </MenuItem>
+              <MenuItem value="Dipendente da remoto per un’azienda estera">
+                Dipendente da remoto per un’azienda estera
+              </MenuItem>
+              <MenuItem value="Freelancer con clienti internazionali">
+                Freelancer con clienti internazionali
+              </MenuItem>
+              <MenuItem value="Proprietario di una mia attività registrata all’estero">
+                Proprietario di una mia attività registrata all’estero
+              </MenuItem>
               <MenuItem value="Freelancer con clienti italiani">Freelancer con clienti italiani</MenuItem>
-              <MenuItem value="Startup o progetto imprenditoriale locale">Startup o progetto imprenditoriale locale</MenuItem>
+              <MenuItem value="Startup o progetto imprenditoriale locale">
+                Startup o progetto imprenditoriale locale
+              </MenuItem>
               <MenuItem value="Altro">Altro (specificare)</MenuItem>
             </Select>
           </FormControl>
@@ -140,20 +179,32 @@ const BurocracyForm: React.FC<BurocracyFormProps> = ({ onSubmit }) => {
               label="Assicurazione Sanitaria"
               required
             >
-              <MenuItem value="" disabled>Seleziona la tua necessità di assicurazione...</MenuItem>
-              <MenuItem value="Sì, necessito di una copertura completa per tutta la durata del soggiorno">Sì, necessito di una copertura completa per tutta la durata del soggiorno</MenuItem>
-              <MenuItem value="Sì, ma solo per situazioni di emergenza">Sì, ma solo per situazioni di emergenza</MenuItem>
-              <MenuItem value="Sì, ho bisogno di una polizza per esigenze lavorative specifiche">Sì, ho bisogno di una polizza per esigenze lavorative specifiche</MenuItem>
-              <MenuItem value="No, ho già una copertura internazionale valida">No, ho già una copertura internazionale valida</MenuItem>
-              <MenuItem value="No, non ritengo necessario avere un’assicurazione sanitaria">No, non ritengo necessario avere un’assicurazione sanitaria</MenuItem>
+              <MenuItem value="" disabled>
+                Seleziona la tua necessità di assicurazione...
+              </MenuItem>
+              <MenuItem value="Sì, necessito di una copertura completa per tutta la durata del soggiorno">
+                Sì, necessito di una copertura completa per tutta la durata del soggiorno
+              </MenuItem>
+              <MenuItem value="Sì, ma solo per situazioni di emergenza">
+                Sì, ma solo per situazioni di emergenza
+              </MenuItem>
+              <MenuItem value="Sì, ho bisogno di una polizza per esigenze lavorative specifiche">
+                Sì, ho bisogno di una polizza per esigenze lavorative specifiche
+              </MenuItem>
+              <MenuItem value="No, ho già una copertura internazionale valida">
+                No, ho già una copertura internazionale valida
+              </MenuItem>
+              <MenuItem value="No, non ritengo necessario avere un’assicurazione sanitaria">
+                No, non ritengo necessario avere un’assicurazione sanitaria
+              </MenuItem>
             </Select>
           </FormControl>
         </Box>
       </Box>
 
       {/* Submit Button */}
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 4, width: '200px' }}>
-        Submit
+      <Button type="submit" variant="contained" color="primary" sx={{ mt: 4, width: '200px' }} disabled={loading}>
+        {loading ? <CircularProgress size={24} /> : 'Submit'}
       </Button>
     </Box>
   );
