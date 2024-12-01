@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "next-auth/react";
 import axiosClient from "@/lib/axiosClient";
 import axios from "axios";
+import prisma from "@/lib/prisma";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -34,7 +35,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 	async function registerAction(formData: FormData) {
 		let name = formData.get("name") as string;
 		let password = formData.get("password") as string;
-		console.log(process.env.BACKEND_URL);
 		await axios
 			.post("http://localhost:1865/users ", {
 				username: name,
@@ -45,6 +45,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 			})
 			.then(() => {
 				setIsLoading(true);
+				fetch("/api/register", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ name: name }),
+				});
 			})
 			.finally(() => {
 				setIsLoading(false);
@@ -63,7 +70,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 							</Label>
 							<Input
 								id="email"
-								placeholder="name@example.com"
+								placeholder="Name"
 								type="text"
 								name="email"
 								autoCapitalize="none"
