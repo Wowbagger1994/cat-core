@@ -2,7 +2,7 @@ import { OpenAI } from "openai";
 
 const api = new OpenAI({
 	baseURL: "https://api.aimlapi.com/v1",
-	apiKey: "fc0d8669ce7c45de97ad3969736b6537",
+	apiKey: "fc0d8669ce7c45de97ad3969736b6537"
 });
 
 export async function GET(request: Request) {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 	const requestBody = await request.json();
 	console.log(requestBody.text);
 	const result = await api.chat.completions.create({
-		model: "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
+		model: process.env.MODEL as string,
 		messages: [
 			{
 				role: "user",

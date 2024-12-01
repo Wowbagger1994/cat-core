@@ -1,22 +1,20 @@
-import * as cdk from "aws-cdk-lib";
-import { CfnOutput } from "aws-cdk-lib";
-import { CdkCheshireCat } from "cdk-cheshire-cat";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
+import { CdkCheshireCat } from "cdk-cheshire-cat";
 import * as ecs from "aws-cdk-lib/aws-ecs";
-import path = require("path");
+import * as cdk from "aws-cdk-lib";
+import * as path from "path";
 
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
-
-export class CdkCatStack extends cdk.Stack {
-	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+export class CdkCatStack extends Stack {
+	constructor(scope: Construct, id: string, props?: StackProps) {
 		super(scope, id, props);
 
 		const qdrantImage = ecs.ContainerImage.fromRegistry(
 			"qdrant/qdrant:v1.7.2"
 		);
-		// You have to link the Dockerfile folder, for example ./core
+		// You have to link the Dockerfile folder, for example ./core with local custom plugins installed
 		const catImage = ecs.ContainerImage.fromAsset(
-			path.resolve(__dirname, "core")
+			path.resolve(__dirname, "../../core")
 		);
 
 		const cheshireCat = new CdkCheshireCat(this, "CheshireCat", {
@@ -36,3 +34,6 @@ export class CdkCatStack extends cdk.Stack {
 		});
 	}
 }
+
+const app = new cdk.App();
+new CdkCatStack(app, "custom-cat-image");
