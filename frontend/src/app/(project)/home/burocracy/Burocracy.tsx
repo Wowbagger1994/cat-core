@@ -69,7 +69,6 @@ const Burocracy: React.FC = () => {
           ) : (
             <ChatBotInterface 
               service='burocracy'
-              onMessageSend={sendBurocracyMessage} 
               title="Burocracy Assistant" />
           )
         )}
