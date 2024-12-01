@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   ThemeProvider,
@@ -14,6 +14,7 @@ import {
   Menu,
   MenuItem,
   Avatar,
+  CircularProgress,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PersonIcon from '@mui/icons-material/Person';
@@ -23,10 +24,7 @@ import LangLearn from './langlearn/LangLearn';
 import CreateTripForm from './CreateTripForm';
 import FirstLoginForm from './FirstLoginForm';
 import EditTripForm from './EditTripForm';
-
-interface HomePage {
-  transport: string | null;
-}
+import axios from 'axios';
 
 // Tema scuro Material UI 3
 const darkTheme = createTheme({
@@ -57,11 +55,33 @@ const darkTheme = createTheme({
 
 const HomePage: React.FC = () => {
   const [selectedSection, setSelectedSection] = useState<string>(''); // Stato per tracciare la sezione selezionata
-  const [isFirstLogin, setIsFirstLogin] = useState<boolean>(true); // Stato per verificare se è il primo login
+  const [isFirstLogin, setIsFirstLogin] = useState<boolean | null>(null); // Stato per verificare se è il primo login
   const [hasCreatedTrip, setHasCreatedTrip] = useState<boolean>(false); // Stato per verificare se un viaggio è stato creato
-
+  const [loading, setLoading] = useState<boolean>(true); // Stato per la gestione del caricamento
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // Stato per gestire il menu a tendina
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    // Recupero delle informazioni dell'utente dal backend per verificare se è il primo login
+    const checkUserProfile = async () => {
+      try {
+        const response = await axios.get('/api/user/profile');
+        const userProfile = response.data;
+
+        // Verifica se ci sono campi vuoti
+        const isProfileComplete = userProfile.profession && userProfile.nomadExperience && userProfile.birthDate && userProfile.nationality && userProfile.language && userProfile.residenceCountry;
+
+        setIsFirstLogin(!isProfileComplete);
+      } catch (error) {
+        console.error('Errore durante il recupero del profilo utente:', error);
+        setIsFirstLogin(true); // In caso di errore, impostiamo come se fosse il primo login per sicurezza
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUserProfile();
+  }, []);
 
   // Funzione per gestire l'apertura del menu utente
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -82,6 +102,14 @@ const HomePage: React.FC = () => {
 
   // Funzione per rendere dinamico il contenuto principale
   const renderContent = () => {
+    if (loading) {
+      return (
+        <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+          <CircularProgress />
+        </Box>
+      );
+    }
+
     if (isFirstLogin) {
       return <FirstLoginForm onSubmit={() => setIsFirstLogin(false)} />;
     }

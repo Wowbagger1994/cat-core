@@ -11,24 +11,24 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 		Credentials({
 			name: "Credentials",
 			credentials: {
-				email: {
-					label: "Email",
+				name: {
+					label: "Name", // Cambiato da "Email" a "Name"
 					type: "text",
-					placeholder: "email",
+					placeholder: "name",
 				},
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(credentials, req) {
-				if (!credentials?.email || !credentials?.password) {
+				if (!credentials?.name || !credentials?.password) {
 					return null;
 				}
-				const { email, password } = credentials;
+				const { name, password } = credentials;
 
 				try {
 					const res = await axiosClient.post(
 						"/auth/token",
 						{
-							username: email,
+							username: name, // Usa "name" qui
 							password: password,
 						},
 						{
@@ -63,7 +63,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
 		async session({ session, token }) {
 			session.accessToken = token.accessToken;
-			session.user = token.user;
+			session.user = {
+				id: token.id,
+				name: token.name,
+			};
 			return session;
 		},
 	},

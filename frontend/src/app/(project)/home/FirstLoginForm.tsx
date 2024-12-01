@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Container, FormControl, InputLabel, MenuItem, Select, TextField, Typography, ThemeProvider, CssBaseline, createTheme } from '@mui/material';
+import axios from 'axios';
 
 interface FirstLoginFormProps {
   onSubmit: () => void;
@@ -44,6 +45,26 @@ const FirstLoginForm: React.FC<FirstLoginFormProps> = ({ onSubmit }) => {
   const [languages, setLanguages] = useState<string>('');
   const [residenceCountry, setResidenceCountry] = useState<string>('');
 
+  // States for dropdown options
+  const [nationalities, setNationalities] = useState<string[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>([]);
+
+  // Fetch nationalities and languages on mount
+  useEffect(() => {
+    const fetchEnums = async () => {
+      try {
+        // Assuming you have an API endpoint to fetch enums
+        const response = await axios.get('/api/user/enums');
+        setNationalities(response.data.nationalities);
+        setAvailableLanguages(response.data.languages);
+      } catch (error) {
+        console.error('Errore nel recupero delle opzioni:', error);
+      }
+    };
+
+    fetchEnums();
+  }, []);
+
   // Form submission handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,26 +106,40 @@ const FirstLoginForm: React.FC<FirstLoginFormProps> = ({ onSubmit }) => {
             />
 
             {/* Nationality Field */}
-            <TextField
-              label="Nazionalità (cittadinanza)"
-              value={nationality}
-              onChange={(e) => setNationality(e.target.value)}
-              placeholder="Inserisci la tua nazionalità"
-              fullWidth
-              required
-            />
+            <FormControl fullWidth required>
+              <InputLabel id="nationality-label">Nazionalità</InputLabel>
+              <Select
+                labelId="nationality-label"
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                label="Nazionalità"
+              >
+                {nationalities.map((nation) => (
+                  <MenuItem key={nation} value={nation}>
+                    {nation}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
 
           <Box display="flex" gap={2}>
             {/* Languages Field */}
-            <TextField
-              label="Lingue parlate"
-              value={languages}
-              onChange={(e) => setLanguages(e.target.value)}
-              placeholder="Inserisci le lingue che parli (es. Italiano, Inglese)"
-              fullWidth
-              required
-            />
+            <FormControl fullWidth required>
+              <InputLabel id="language-label">Lingue parlate</InputLabel>
+              <Select
+                labelId="language-label"
+                value={languages}
+                onChange={(e) => setLanguages(e.target.value)}
+                label="Lingue parlate"
+              >
+                {availableLanguages.map((lang) => (
+                  <MenuItem key={lang} value={lang}>
+                    {lang}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             {/* Residence Country Field */}
             <TextField

@@ -9,14 +9,15 @@ datasource db {
 
 model User {
   id               String          @id @default(cuid())
-  name             String
+  name             String          @unique
   email            String?
   profession       String?
   nomadExperience  String?
   birthDate        DateTime?
-  nationality      String?
-  language         String?
+  nationality      Nationality?    // Cambiato a un tipo enum
+  language         Language?       // Cambiato a un tipo enum
   residenceCountry String?
+  tripCount        Int?
   transportation   String?
   duration         String?
   purpose          String?
@@ -42,4 +43,208 @@ model UserDocuments {
   documentId String
   document   Documents @relation(fields: [documentId], references: [id])
   user       User      @relation(fields: [userId], references: [id])
+}
+
+// Definizione dell'enum Nationality
+enum Nationality {
+  Afghan
+  Albanian
+  Algerian
+  American
+  Andorran
+  Angolan
+  AntiguanAndBarbudan
+  Argentine
+  Armenian
+  Australian
+  Austrian
+  Azerbaijani
+  Bahamian
+  Bangladeshi
+  Barbadian
+  Belarusian
+  Belgian
+  Belizean
+  Beninese
+  Bhutanese
+  Bolivian
+  Bosnian
+  Botswanan
+  Brazilian
+  British
+  Bruneian
+  Bulgarian
+  Burkinabe
+  Burundian
+  Cambodian
+  Cameroonian
+  Canadian
+  CapeVerdean
+  CentralAfrican
+  Chadian
+  Chilean
+  Chinese
+  Colombian
+  Comorian
+  Congolese_Republic
+  Congolese_DemocraticRepublic
+  CostaRican
+  Croatian
+  Cuban
+  Cypriot
+  Czech
+  Danish
+  Djiboutian
+  Dominican_Republic
+  Dominican_Dominica
+  Egyptian
+  Emirati
+  Ecuadorian
+  Eritrean
+  Estonian
+  Ethiopian
+  Filipino
+  Finnish
+  Fijian
+  French
+  Gabonese
+  Gambian
+  Georgian
+  German
+  Ghanaian
+  Greek
+  Grenadian
+  Guatemalan
+  Guinean
+  GuineaBissauan
+  EquatorialGuinean
+  Guyanese
+  Haitian
+  Dutch
+  Honduran
+  Hungarian
+  Icelandic
+  Indian
+  Indonesian
+  Iranian
+  Iraqi
+  Irish
+  Israeli
+  Italian
+  Ivorian
+  Jamaican
+  Japanese
+  Jordanian
+  Kazakh
+  Kenyan
+  Kyrgyz
+  Kiribati
+  NorthKorean
+  SouthKorean
+  Kosovar
+  Kuwaiti
+  Laotian
+  Latvian
+  Lebanese
+  Liberian
+  Libyan
+  Liechtensteinian
+  Lithuanian
+  Luxembourgish
+  Macedonian
+  Malagasy
+  Malawian
+  Malaysian
+  Maldivian
+  Malian
+  Maltese
+  Moroccan
+  Marshallese
+  Mauritanian
+  Mauritian
+  Mexican
+  Micronesian
+  Moldovan
+  Monacan
+  Mongolian
+  Montenegrin
+  Mozambican
+  Burmese
+  Namibian
+  Nauruan
+  Nepali
+  NewZealander
+  Nicaraguan
+  Nigerian
+  Nigerien
+  Norwegian
+  Omani
+  Pakistani
+  Palauan
+  Palestinian
+  Panamanian
+  PapuaNewGuinean
+  Paraguayan
+  Peruvian
+  Polish
+  Portuguese
+  Qatari
+  Romanian
+  Russian
+  Rwandan
+  SaintKittsAndNevis
+  SaintLucian
+  SaintVincentAndGrenadines
+  SolomonIslander
+  Sanmarinese
+  SaoTomean
+  Saudi
+  Senegalese
+  Serbian
+  Seychellois
+  SierraLeonean
+  Singaporean
+  Slovak
+  Slovenian
+  Somali
+  SouthAfrican
+  Sudanese
+  SouthSudanese
+  Spanish
+  Sinhalese
+  Surinamese
+  Swedish
+  Swiss
+  Syrian
+  Taiwanese
+  Tajik
+  Tanzanian
+  Thai
+  Togolese
+  Tongan
+  TrinidadianAndTobagonian
+  Tunisian
+  Turkish
+  Turkmen
+  Tuvaluan
+  Ugandan
+  Ukrainian
+  Uruguayan
+  Uzbek
+  Vanuatuan
+  Venezuelan
+  Vietnamese
+  Yemeni
+  Zambian
+  Zimbabwean
+}
+
+// Definizione dell'enum Language
+enum Language {
+  English
+  Spanish
+  French
+  German
+  Portuguese
+  Italian
 }
