@@ -24,6 +24,10 @@ import CreateTripForm from './CreateTripForm';
 import FirstLoginForm from './FirstLoginForm';
 import EditTripForm from './EditTripForm';
 
+interface HomePage {
+  transport: string | null;
+}
+
 // Tema scuro Material UI 3
 const darkTheme = createTheme({
   palette: {

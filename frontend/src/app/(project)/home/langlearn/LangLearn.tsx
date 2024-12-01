@@ -90,6 +90,7 @@ const LangLearn: React.FC = () => {
           ) : (
             <ChatBotInterface
               onMessageSend={sendLangLearnMessage}
+              service='Lang Learn'
               title="Lang Learn Assistant"
             />
           )}

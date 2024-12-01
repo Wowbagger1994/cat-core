@@ -8,6 +8,7 @@ interface ChatMessage {
 
 interface ChatBotInterfaceProps {
   onMessageSend: (message: string) => Promise<string>;
+  service: string;
   title: string;
 }
 
@@ -40,11 +41,31 @@ const darkTheme = createTheme({
   },
 });
 
-const ChatBotInterface: React.FC<ChatBotInterfaceProps> = ({ onMessageSend, title }) => {
+const ChatBotInterface: React.FC<ChatBotInterfaceProps> = ({ onMessageSend, title, service }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>('');
   const [isSending, setIsSending] = useState<boolean>(false); // Stato per gestire l'invio del messaggio
   const messagesEndRef = useRef<HTMLDivElement | null>(null); // Ref per l'elemento di fine messaggi
+
+  // async function sendMessage(msg: string) {
+	// 	const options = {
+	// 		method: "POST",
+	// 		url: process.env.BACKEND_URL + "/message",
+	// 		headers: { "Content-Type": "application/json", user_id: user },
+	// 		data: {
+	// 			text: msg,
+	// 			user_info: { name: "Enrik" },
+  // 			service: service,
+	// 		},
+	// 	};
+
+	// 	try {
+	// 		const data = await axios.request(options);
+	// 		console.log("data: ", data.data);
+	// 	} catch (error) {
+	// 		console.error(error);
+	// 	}
+	// }
 
   // Funzione per scorrere automaticamente all'ultimo messaggio
   const scrollToBottom = () => {

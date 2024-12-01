@@ -67,7 +67,10 @@ const Burocracy: React.FC = () => {
           !formCompleted ? (
             <BurocracyForm onSubmit={handleFormSubmit} />
           ) : (
-            <ChatBotInterface onMessageSend={sendBurocracyMessage} title="Burocracy Assistant" />
+            <ChatBotInterface 
+              service='burocracy'
+              onMessageSend={sendBurocracyMessage} 
+              title="Burocracy Assistant" />
           )
         )}
       </Box>
