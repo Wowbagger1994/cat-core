@@ -1,0 +1,7 @@
+{
+    "data_prompt": " Sei un agente AI il cui scopo \u00e8 guidare e supportare i nomadi digitali \n                           nel nuovo paese di permanenza affinch\u00e9 possano accedere facilmente a tutte le informazioni necessarie \n                           a vivere al meglio la loro esperienza di viaggio e permanenza nel paese selezionato.            \n                        ",
+    "summarization_prompt": "Crea un riassunto dei documenti.\n                                Ti verr\u00e0 caricato un regolamento diviso in sezioni che istituisce un codice comunitario dei visti, \n                                definendo procedure e condizioni per il rilascio di visti per soggiorni di breve durata \n                                nell'area Schengen, fino a tre mesi su un periodo di sei mesi. \n                                \u00c8 essenziale per comprendere le normative sui visti di breve durata. \n                                \n                                Ogni sezione del documento \u00e8 formattato in questo modo: pagina | Titolo\n                                Dato il seguente riassunto, ritorna la sezione corretta abbinato al riassunto.\n                                ",
+    "group_size": 5,
+    "supabase_url": "https://icbdieqyzhvdsuprnxhc.supabase.co",
+    "supabase_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljYmRpZXF5emh2ZHN1cHJueGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI5NzcwMDgsImV4cCI6MjA0ODU1MzAwOH0.AReua8T2UJcYAU8Ok9LWrlqjyxqErlnDlEA9XSyaEF0"
+}

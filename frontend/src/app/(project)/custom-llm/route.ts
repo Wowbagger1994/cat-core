@@ -2,7 +2,7 @@ import { OpenAI } from "openai";
 
 const api = new OpenAI({
 	baseURL: "https://api.aimlapi.com/v1",
-	apiKey: "1234d0c783954b6d8062f61148fe85be",
+	apiKey:  process.env.AIML_KEY,
 });
 
 export async function GET(request: Request) {
