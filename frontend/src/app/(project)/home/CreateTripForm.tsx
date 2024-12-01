@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  CircularProgress,
+} from '@mui/material';
+import axios from 'axios';
 
 interface CreateTripFormProps {
   onSubmit: () => void;
@@ -12,24 +23,37 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSubmit }) => {
   const [duration, setDuration] = useState<string>('');
   const [purpose, setPurpose] = useState<string>('');
   const [otherPurpose, setOtherPurpose] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Funzione per gestire l'invio del form
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logica per gestire l'invio del form (es. inviare dati al server)
-    console.log({
+    setLoading(true);
+
+    const tripData = {
       transportation: transportation === 'Altro' ? otherTransportation : transportation,
       duration,
       purpose: purpose === 'Altro' ? otherPurpose : purpose,
-    });
-    alert('Trip created successfully!');
+    };
 
-    // Chiamare la funzione onSubmit per notificare il genitore
+    console.log('Trip data:', tripData);
+    setLoading(false);
+
     onSubmit();
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3, width: '100%', alignItems: 'center' }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 3,
+        width: '100%',
+        alignItems: 'center',
+      }}
+    >
       <Typography variant="h4" color="primary" textAlign="center">
         Create a New Trip
       </Typography>
@@ -44,7 +68,9 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSubmit }) => {
           label="Mezzo di Trasporto"
           required
         >
-          <MenuItem value="" disabled>Seleziona il mezzo di trasporto...</MenuItem>
+          <MenuItem value="" disabled>
+            Seleziona il mezzo di trasporto...
+          </MenuItem>
           <MenuItem value="Aereo">Aereo</MenuItem>
           <MenuItem value="Treno">Treno</MenuItem>
           <MenuItem value="Auto">Auto</MenuItem>
@@ -75,7 +101,9 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSubmit }) => {
           label="Durata del Soggiorno"
           required
         >
-          <MenuItem value="" disabled>Seleziona la durata del soggiorno...</MenuItem>
+          <MenuItem value="" disabled>
+            Seleziona la durata del soggiorno...
+          </MenuItem>
           <MenuItem value="Meno di 1 mese">Meno di 1 mese</MenuItem>
           <MenuItem value="Da 1 a 3 mesi">Da 1 a 3 mesi</MenuItem>
           <MenuItem value="Da 3 a 6 mesi">Da 3 a 6 mesi</MenuItem>
@@ -94,7 +122,9 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSubmit }) => {
           label="Motivo del Viaggio"
           required
         >
-          <MenuItem value="" disabled>Seleziona il motivo del viaggio...</MenuItem>
+          <MenuItem value="" disabled>
+            Seleziona il motivo del viaggio...
+          </MenuItem>
           <MenuItem value="Lavoro da remoto">Lavoro da remoto</MenuItem>
           <MenuItem value="Studio">Studio</MenuItem>
           <MenuItem value="Turismo">Turismo</MenuItem>
@@ -116,8 +146,8 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSubmit }) => {
       </FormControl>
 
       {/* Submit Button */}
-      <Button type="submit" variant="contained" color="primary" sx={{ width: '200px' }}>
-        Create Trip
+      <Button type="submit" variant="contained" color="primary" sx={{ width: '200px' }} disabled={loading}>
+        {loading ? <CircularProgress size={24} /> : 'Create Trip'}
       </Button>
     </Box>
   );
