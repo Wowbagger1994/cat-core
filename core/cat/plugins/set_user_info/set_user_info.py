@@ -2,13 +2,14 @@ from cat.mad_hatter.decorators import tool, hook
 
 @hook
 def agent_prompt_prefix(prefix, cat):
-    prompt = """
-    You are NomadNexus, an intelligent assistant designed to provide clear and easy-to-understand answers to legal questions, specifically tailored to the needs of digital nomads. you adapt your responses based on the user's preferences and context. Always respond in a friendly, professional, and approachable tone.
+# Define prompts for each agent
+    legal_prompt = """
+    You are NomadNexus, an intelligent assistant designed to provide clear and easy-to-understand answers to legal questions, specifically tailored to the needs of digital nomads. You adapt your responses based on the user's preferences and context. Always respond in a friendly, professional, and approachable tone.
 
     When responding, consider the following details:
     1. User's Name: {user_name}
     2. User's Age: {user_age}
-    3. Preferred Language, use only this language to response: {language}
+    3. Preferred Language, use only this language to respond: {language}
     4. Destination Country: {destination}
     5. Duration of Stay: {duration}
     6. Arrival Date: {arrival_date}
@@ -21,19 +22,46 @@ def agent_prompt_prefix(prefix, cat):
     Focus on practical advice, include links to official resources when applicable, and clearly highlight key steps the user needs to take to comply with laws in the specified destination.
     """
 
-    formatted_prompt = ""
-    if "user_info" in cat.working_memory:
-        info = cat.working_memory["user_info"]
-        formatted_prompt = prompt.format(
-            user_name=info["name"] if "name" in info else "",
-            user_age=info["age"] if "age" in info else "",
-            language=info["language"] if "language" in info else "",
-            destination=info["destination"] if "destination" in info else "",
-            duration=info["duration"] if "duration" in info else "",
-            arrival_date=info["arrival_date"] if "arrival_date" in info else "",
-            nationality=info["nationality"] if "nationality" in info else "",
-            current_location=info["current_location"] if "current_location" in info else "",
-            occupation=info["occupation"] if "occupation" in info else ""
-        )
+    language_prompt = """
+    You are LinguaMate, an intelligent language-learning assistant focused on helping users achieve their language goals. You create personalized study plans, suggest exercises, and adapt content based on the user's current and target proficiency levels. Always respond in an encouraging, engaging, and structured tone.
 
-    return formatted_prompt
+    When creating a language plan, consider the following details:
+    1. User's Name: {user_name}
+    2. Preferred Language: {language}
+    3. Current Proficiency Level: {current_level}
+    4. Target Proficiency Level: {target_level}
+    5. Time to Achieve the Target Level: {time_to_achieve}
+    6. Weekly Time Available: {weekly_time} hours
+    7. Weekly Frequency of Sessions: {weekly_frequency}
+    8. Language Focus Areas: {language_focus}
+
+    Use these placeholders to craft personalized advice, practical exercises, and achievable milestones. Offer tips and additional resources for language acquisition and emphasize consistency in practice.
+    """
+
+# Function to format the prompt based on the context
+    def format_prompt(agent_type, user_info):
+        if agent_type == "legal":
+            return legal_prompt.format(
+                user_name=user_info.get("name", ""),
+                user_age=user_info.get("age", ""),
+                language=user_info.get("language", ""),
+                destination=user_info.get("destination", ""),
+                duration=user_info.get("duration", ""),
+                arrival_date=user_info.get("arrival_date", ""),
+                nationality=user_info.get("nationality", ""),
+                current_location=user_info.get("current_location", ""),
+                occupation=user_info.get("profession", "")  # Adapt field name for "occupation"
+            )
+        elif agent_type == "language":
+            return language_prompt.format(
+                user_name=user_info.get("name", ""),
+                language=user_info.get("language", ""),
+                current_level=user_info.get("currentLevel", ""),
+                target_level=user_info.get("targetLevel", ""),
+                time_to_achieve=user_info.get("timeToAchieve", ""),
+                weekly_time=user_info.get("weeklyTime", 0),
+                weekly_frequency=user_info.get("weeklyFrequency", ""),
+                language_focus=user_info.get("languageFocus", "")
+            )
+
+    return format_prompt(cat.working_memory["service"], cat.working_memory["user_info"])
